@@ -329,19 +329,16 @@ def main_menu():
 
         # Get the customer's input
         cancel_order_number = len(menu) + 1
-        menu_category = input(f"\nPlease enter a number listed above to see what we got!\nEnter {cancel_order_number} to cancel your order.")
+        menu_category = input(f"\nPlease enter a number listed above to see what we got!\nEnter {cancel_order_number} to cancel your order: ")
 
         # Check if the customer's input is a number
         if menu_category.isdigit():
             # Check if the customer's input is a valid option
             if int(menu_category) in menu_items.keys():
+                clear_screen()
                 # Save the menu category name to a variable
                 menu_category_name = menu_items[int(menu_category)]
-                # Print out the menu category name they selected
-                print(f"You selected {menu_category_name}")
-
-                # Print out the menu options from the menu_category_name
-                print(f"What {menu_category_name} item would you like to order?")
+                print(f"\nWhich {menu_category_name} items would you like to order?\n")
                 i = 1
                 menu_items = {}
                 print("Item # | Item name                | Price")
@@ -367,7 +364,12 @@ def main_menu():
                             "Price": value
                         }
                         i += 1
+
+
                 # 2. Ask customer to input menu item number
+                user_input = input("\nPlease enter a number that coresponds with the item you want!\nThen we will ask how many in the next question. ")
+
+                # if user_input.isdigit(): # Here we are!
 
 
                 # 3. Check if the customer typed a number
@@ -405,7 +407,7 @@ def main_menu():
 
         while True:
             # Ask the customer if they would like to order anything else
-            keep_ordering = input("Would you like to keep ordering? Please enter 'y' to continue or 'n' to cancel. ")
+            keep_ordering = input("Would you like to keep ordering? Please enter 'y' to continue or 'n' to cancel: ")
 
             # 5. Check the customer's input
             if keep_ordering.lower() == 'y':
