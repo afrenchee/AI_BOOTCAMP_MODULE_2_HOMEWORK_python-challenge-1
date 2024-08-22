@@ -285,7 +285,7 @@ def clear_screen(): # This function is used to clear the terminal screen based o
 def cancel_order():
     clear_screen()
     print("")
-    print("We're sorry to see you go!\n")
+    print("We're sorry to see you go\n    and hope that you come back soon!\n")
     if windows_is_the_OS:
         os.system('cd')
         os.system('dir')
@@ -299,6 +299,8 @@ def cancel_order():
 
 def main_menu():
     global current_order # Allow access to a global variable
+    cancel_order_number = None
+
     clear_screen() # Clear terminal for a smooth look
     print("\nWelcome to the variety food truck!!!\nWe hope that you're having a great day, so that we can make it even better!!!\n") # Launch the store and present a greeting to the customer
     # 1. Set up order list. Order list will store a list of dictionaries for
@@ -326,7 +328,8 @@ def main_menu():
             i += 1
 
         # Get the customer's input
-        menu_category = input("\nPlease enter a number listed above to see what we got! ")
+        cancel_order_number = len(menu) + 1
+        menu_category = input(f"\nPlease enter a number listed above to see what we got!\nEnter {cancel_order_number} to cancel your order.")
 
         # Check if the customer's input is a number
         if menu_category.isdigit():
@@ -391,12 +394,14 @@ def main_menu():
 
                     # Tell the customer they didn't select a menu option
 
+            elif int(menu_category) == cancel_order_number:
+                cancel_order()
             else:
                 # Tell the customer they didn't select a menu option
                 print(f"\n{menu_category} is not a menu option you silly goose!\n")
         else:
             # Tell the customer they didn't select a number
-            print("\nYou didn't enter a number you silly goose!\n")
+            print(f"{menu_category} is not a menu option you silly goose!!!")
 
         while True:
             # Ask the customer if they would like to order anything else
