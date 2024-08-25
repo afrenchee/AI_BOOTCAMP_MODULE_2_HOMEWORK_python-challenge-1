@@ -194,22 +194,23 @@ def sub_menu():
     global menu_items
     global menu_category
     clear_screen()
+
     chillin_in_the_sub_menu_function = True
-    # Save the menu category name to a variable
-    menu_category_name = menu_items[int(menu_category)]
+    menu_category_name = menu_items[menu_category]
+
     print(f"\nWhich {menu_category_name} items would you like to order?\n")
     i = 1
-    menu_items = {}
+    sub_menu_items = {}  # Use a separate dictionary for the sub-menu items
     print("Item # | Item name                | Price")
     print("-------|--------------------------|-------")
+
     for key, value in menu[menu_category_name].items():
-        # Check if the menu item is a dictionary to handle differently
-        if type(value) is dict:
+        if isinstance(value, dict):
             for key2, value2 in value.items():
                 num_item_spaces = 24 - len(key + key2) - 3
                 item_spaces = " " * num_item_spaces
                 print(f"{i}      | {key} - {key2}{item_spaces} | ${value2}")
-                menu_items[i] = {
+                sub_menu_items[i] = {
                     "Item name": key + " - " + key2,
                     "Price": value2
                 }
@@ -218,35 +219,34 @@ def sub_menu():
             num_item_spaces = 24 - len(key)
             item_spaces = " " * num_item_spaces
             print(f"{i}      | {key}{item_spaces} | ${value}")
-            menu_items[i] = {
+            sub_menu_items[i] = {
                 "Item name": key,
                 "Price": value
             }
             i += 1
 
-    print("\nEnter "+str(i)+" to go back to the main menu.")
+    print(f"\nEnter {i} to go back to the main menu.")
 
-    # 2. Ask customer to input menu item number
     while True:
-        user_input = input("\nPlease enter a number that coresponds with the item you want!\nThen we will ask how many in the next question. ")
+        user_input = input("Please enter a number that corresponds with the item you want: ")
         if user_input.isdigit():
             user_input = int(user_input)
-
-            print("TEMP LENGTH menu_items: ", len(menu_items))
-
-            if user_input in range(1, len(menu_items) + 1):
-                while True:
-                    quantity_input = input('\nHow many "'+menu_items[user_input]['Item name']+'s" would you like? ')
-                    if quantity_input.isdigit():
-                        print(str(quantity_input)+" "+menu_items[user_input]["Item name"]+"s would cost X.")
+            if user_input in sub_menu_items:
+                quantity_input = input(f'\nYou picked "{sub_menu_items[user_input]["Item name"]}"! How many would you like? Enter 0 to go back. ')
+                if quantity_input.isdigit():
+                    quantity_input = int(quantity_input)
+                    if quantity_input == 0:
+                        sub_menu()  # This calls `sub_menu` again which can be optimized by a loop or exit flag.
                     else:
-                    	print(f"\n{quantity_input} is not an input option you silly goose!!!")
+                        total_cost = round(sub_menu_items[user_input]["Price"] * quantity_input, 2)
+                        print(f'{quantity_input} "{sub_menu_items[user_input]["Item name"]}" would cost ${total_cost}.')
+                        # user input
             elif user_input == i:
-            	main_menu()
+                main_menu()
             else:
-                print(f"{user_input} is not an input option you silly goose!!!")
+                print(f"{user_input} is not an input option!")
         else:
-            print(f"{user_input} is not an input option you silly goose!!!")
+            print(f"{user_input} is not an input option!")
 
 
 
