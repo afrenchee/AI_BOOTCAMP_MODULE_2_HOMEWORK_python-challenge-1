@@ -88,6 +88,11 @@ def cancel_order():
 
 
 
+def print_invalid_input(invalid_input):
+	print(f"\n{invalid_input} is not an input option you silly goose!!!\n")
+
+
+
 def main_menu():
 	global current_order # Allow access to a global variable
 	cancel_order_number = None
@@ -97,53 +102,44 @@ def main_menu():
 
 	clear_screen() # Clear terminal for a smooth look
 	print("\nWelcome to THE GIGA-CHAD FOOD TRUCK!!!\nWe hope that you're having a great day, so that we can make it even better!!!\n") # Launch the store and present a greeting to the customer
-	# 1. Set up order list. Order list will store a list of dictionaries for
-	# menu item name, item price, and quantity ordered
-
-	# Customers may want to order multiple items, so let's create a continuous
-	# loop
+	
 	placing_order = True # Changed variable name for clairity of purpose
 	while placing_order:
-		# Ask the customer from which menu category they want to order
 		print("Hey look it's our main menu!")
 
-		# Create a variable for the menu item number
 		i = 1
-		# Print the options to choose from menu headings (all the first level
-		# dictionary items in menu).
 		for key in menu.keys():
 			print(f"{i}: {key}")
-			# Store the menu category associated with its menu item number
 			menu_items[i] = key # This line makes a new dictionary enterance in menu_items with the number i as the key, and "key" as the value
-			# Add 1 to the menu item number
 			i += 1
 
-		# Get the customer's input
-		cancel_order_number = len(menu) + 1
+		if len(current_order) > 0:
+			cancel_order_number = len(menu) + 2
+			print(f'\nEnter "{i}" to view, edit, or checkout your current order!')
+		else:
+			cancel_order_number = len(menu) + 1
 		menu_category = input(f"\nPlease enter a number listed above to see what we got!\nEnter {cancel_order_number} to cancel your order: ") # Needs to be an int = to the int key names in 
 
-		# Check if the customer's input is a number
-		if menu_category.isdigit() and (int(menu_category) in menu_items.keys() or int(menu_category) == cancel_order_number):
+		if menu_category.isdigit() and (int(menu_category) in menu_items.keys() or int(menu_category) == cancel_order_number or (int(menu_category) == i and len(current_order) > 0)):
 			menu_category = int(menu_category)
 			if int(menu_category) in menu_items.keys():
 				sub_menu()
 			elif int(menu_category) == cancel_order_number:
 				cancel_order()
+			elif int(menu_category) == i and len(current_order) > 0:
+				view_edit_and_finish_order()
 		else:
-			# Tell the customer they didn't select a number
-			print(f"\n{menu_category} is not a menu option you silly goose!!!\n")
+			print_invalid_input(menu_category)
 
 		while True:
-			# Ask the customer if they would like to order anything else
 			keep_ordering = input("Would you like to keep ordering? Please enter 'y' to continue or 'n' to cancel: ")
 
-			# 5. Check the customer's input
 			if keep_ordering.lower() == 'y':
 				main_menu()
 			elif keep_ordering.lower() == 'n':
 				cancel_order()
 			else:
-				print(f"\n{keep_ordering} is not a valid input you silly goose!!!\n")
+				print_invalid_input(keep_ordering)
 
 
 
@@ -182,93 +178,106 @@ def sub_menu():
 			}
 			i += 1
 
-	print(f"\nEnter {i} to go back to the main menu.")
+	print(f"\nEnter {i} to go back to the main menu.\n")
 
 	while True:
-		user_input = input("\nPlease enter a number that corresponds with the item you want: ")
+		user_input = input("Please enter a number that corresponds with the item you want: ")
+		# print("")
 		if user_input.isdigit():
 			user_input = int(user_input)
 			if user_input in sub_menu_items:
-				quantity_input = input(f'\nYou picked "{sub_menu_items[user_input]["Item name"]}"! How many would you like?\nEnter 0 to go back. ')
-				if quantity_input.isdigit():
-					quantity_input = int(quantity_input)
-					if quantity_input == 0:
-						sub_menu()  # This calls `sub_menu` again which can be optimized by a loop or exit flag.
-					else:
-						total_cost = round(sub_menu_items[user_input]["Price"] * quantity_input, 2)
-						print(f'\n{quantity_input} "{sub_menu_items[user_input]["Item name"]}" would cost ${total_cost}.\n')
+				while True:
+					quantity_input = input(f'You picked "{sub_menu_items[user_input]["Item name"]}"! How many would you like?\nEnter 0 to go back. ')
+					if quantity_input.isdigit():
+						quantity_input = int(quantity_input)
+						if quantity_input == 0:
+							sub_menu()  # This calls `sub_menu` again which can be optimized by a loop or exit flag.
+						else:
+							total_cost = round(sub_menu_items[user_input]["Price"] * quantity_input, 2)
+							print(f'\n{quantity_input} "{sub_menu_items[user_input]["Item name"]}" would cost ${total_cost}.\n')
 
-						while True:
-							confirmation = input(f'Just to double check, you want to add {quantity_input} "{sub_menu_items[user_input]["Item name"]}" to your order for ${total_cost}?\nEnter "y" to add or "n" to go back. ')
-							if confirmation.lower() == 'y':
-								new_item = {
-									"Item name": sub_menu_items[user_input]["Item name"],
-									"Quantity": quantity_input,
-									"Individual Price": sub_menu_items[user_input]["Price"],
-									"Total Price": total_cost
-									# Add string to print
-								}
-								current_order.append(new_item)
+							while True:
+								confirmation = input(f'Just to double check, you want to add {quantity_input} "{sub_menu_items[user_input]["Item name"]}" to your order for ${total_cost}?\nEnter "y" to add or "n" to go back. ')
+								if confirmation.lower() == 'y':
+									new_item = {
+										"Item Name": sub_menu_items[user_input]["Item name"],
+										"Quantity": quantity_input,
+										"Individual Price": sub_menu_items[user_input]["Price"],
+										"Total Price": total_cost
+										# Add string to print
+									}
+									current_order.append(new_item)
 
-								while True:
 									clear_screen()
-									print(f'\n{current_order[len(current_order) - 1]["Quantity"]} "{current_order[len(current_order) - 1]["Item name"]}" was added to you order, adding ${current_order[len(current_order) - 1]["Total Price"]} to your total price!')
-									view_order_question = input(
+									print(f'\n{current_order[len(current_order) - 1]["Quantity"]} "{current_order[len(current_order) - 1]["Item Name"]}" were added to you order, adding ${current_order[len(current_order) - 1]["Total Price"]} to your total price!')
+									print(
 										f'\nEnter "1" to view, edit, or checkout your current order!\n'
 										f'Enter "2" to add more {menu_category_name}!\n'
 										'Enter "3" to return to the main menu!\n'
 										'Enter "4" to cancel the order!\n'
-										'\nPlease enter a number listed above to proceed: '
 									)
-
-									if view_order_question.isdigit() and int(view_order_question) > 0 and int(view_order_question) <= 4:
-										view_order_question = int(view_order_question)
-										if view_order_question == 1:
-											view_edit_and_finish_order()
-										elif view_order_question == 2:
-											sub_menu()
-										elif view_order_question == 3:
-											main_menu()
-										elif view_order_question == 4:
-											cancel_order()
-									else:
-										print(f"\n{view_order_question} is not a valid inout you silly goose!!!")
-							elif confirmation.lower() == 'n':
-								sub_menu()
-							else:
-								print(f"\n{confirmation} is not a valid input you silly goose!!!\n")
+									while True:
+										view_order_question = input("Please enter a number listed above to proceed: ")
+										if view_order_question.isdigit() and int(view_order_question) > 0 and int(view_order_question) <= 4:
+											view_order_question = int(view_order_question)
+											if view_order_question == 1:
+												view_edit_and_finish_order()
+											elif view_order_question == 2:
+												sub_menu()
+											elif view_order_question == 3:
+												main_menu()
+											elif view_order_question == 4:
+												cancel_order()
+										else:
+											print_invalid_input(view_order_question)
+								elif confirmation.lower() == 'n':
+									sub_menu()
+								else:
+									print_invalid_input(confirmation)
+					else:
+						print_invalid_input(quantity_input)
 			elif user_input == i:
 				main_menu()
 			else:
-				print(f"{user_input} is not an input option!")
+				print(f"\n{user_input} is not an input option you silly goose!!!")
+				print_invalid_input(user_input)
 		else:
-			print(f"{user_input} is not an input option!")
+			print_invalid_input(user_input)
 
 
 
-def view_edit_and_finish_order(): # Here we are!
+def view_edit_and_finish_order():
 	clear_screen()
-	print("TEMP! Print out the recipt that the assignment calls for") # Print out order in the recipt format the assignment wants
+	print("\nYour current order contains:\n") # Print out order in the recipt format the assignment wants
+	i = 0
+	final_order_cost = 0
+	for obj in current_order:
+		i += 1
+		print(str(i)+'. "'+str(obj["Item Name"])+'": Your order contains '+str(obj["Quantity"])+' of these at $'+str(obj)["Individual Price"]+' each, adding $'+str(obj["Total Price"])+' to your order!')
+		final_order_cost = final_order_cost + float(obj["Total Price"])
+
+	print("Your orders total cost is $"+str(finish_order_cost))
+
 	while True:
 		#Ask to either edit, or finish order.
 		print(current_order) # print with format
+		print(
+			'\nEnter "1" to cash out and purchase your order!\n'
+			'Enter "2" to edit your order!\n'
+			'\nEnter "3" to return to the main menu: '
+		)
 		while True:
-			finish_order_input = input(
-					'\nEnter "1" to cash out by purchasing your order!\n'
-					'Enter "2" to edit your order!\n'
-					'\nEnter "3" to return to the main menu\n'
-
-				)
+			finish_order_input = input("Please enter one of the numbers listed above to proceed: ")
 			if finish_order_input.isdigit() and int(finish_order_input) > 0 and int(finish_order_input) <= 3:
 				finish_order_input = int(finish_order_input)
 				if finish_order_input == 1:
 					print("Temp") # Cash out
 				elif finish_order_input == 2:
 					print("Temp")
-				if finish_order_input == '3':
+				if finish_order_input == 3:
 					main_menu()
 			else:
-				print(f"\n{finish_order_input} is not a valid input you silly goose!!!\n")
+				print_invalid_input(finish_order_input)
 
 
 
