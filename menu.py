@@ -60,8 +60,11 @@ menu = {
 }
 
 current_order = [] # Customers order list. Created globally to be accessed from multiple functions
+final_order_cost = 0
 menu_items = {} # GLOBAL Create a dictionary to store the menu for later retrieval; THIS WILL BE A DICTIONARY WITH KEY = MENU ITEM NUMBER, AND VALUE = SUB-CATAGORY 
 menu_category = None
+
+truck_name = "THE GIGA_CHAD FOOD TRUCK"
 
 
 
@@ -73,10 +76,7 @@ def clear_screen(): # This function is used to clear the terminal screen based o
 
 
 
-def cancel_order():
-	clear_screen()
-	print("")
-	print("We're sorry to see you go\n    and hope that you come back soon!\n")
+def end_program():
 	if windows_is_the_OS:
 		os.system('cd')
 		os.system('dir')
@@ -85,6 +85,13 @@ def cancel_order():
 		os.system('ls')
 	print("")
 	sys.exit()
+
+
+
+def cancel_order():
+	clear_screen()
+	print("\nWe're sorry to see you go\n    and hope that you come back soon!\n")
+	end_program()
 
 
 
@@ -101,7 +108,7 @@ def main_menu():
 	global menu_category
 
 	clear_screen() # Clear terminal for a smooth look
-	print("\nWelcome to THE GIGA-CHAD FOOD TRUCK!!!\nWe hope that you're having a great day, so that we can make it even better!!!\n") # Launch the store and present a greeting to the customer
+	print("\nWelcome to "+truck_name+"!!!\n    We hope that you're having a great day, so that we can make it even better!!!\n") # Launch the store and present a greeting to the customer
 	
 	placing_order = True # Changed variable name for clairity of purpose
 	while placing_order:
@@ -188,10 +195,13 @@ def sub_menu():
 			if user_input in sub_menu_items:
 				while True:
 					quantity_input = input(f'You picked "{sub_menu_items[user_input]["Item name"]}"! How many would you like?\nEnter 0 to go back. ')
-					if quantity_input.isdigit():
+					if quantity_input.isdigit() or quantity_input == "":
+						if quantity_input == "": # Default quantity to 1 if no input
+							quantity_input = 1
+						
 						quantity_input = int(quantity_input)
 						if quantity_input == 0:
-							sub_menu()  # This calls `sub_menu` again which can be optimized by a loop or exit flag.
+							sub_menu()						
 						else:
 							total_cost = round(sub_menu_items[user_input]["Price"] * quantity_input, 2)
 							print(f'\n{quantity_input} "{sub_menu_items[user_input]["Item name"]}" would cost ${total_cost}.\n')
@@ -239,7 +249,6 @@ def sub_menu():
 			elif user_input == i:
 				main_menu()
 			else:
-				print(f"\n{user_input} is not an input option you silly goose!!!")
 				print_invalid_input(user_input)
 		else:
 			print_invalid_input(user_input)
@@ -247,33 +256,26 @@ def sub_menu():
 
 
 def view_edit_and_finish_order():
+	global current_order
+	global final_order_cost
 	clear_screen()
-	print("\nYour current order contains:\n") # Print out order in the recipt format the assignment wants
-	i = 0
-	final_order_cost = 0
-	for obj in current_order:
-		i += 1
-		print(str(i)+'. "'+str(obj["Item Name"])+'": Your order contains '+str(obj["Quantity"])+' of these at $'+str(obj)["Individual Price"]+' each, adding $'+str(obj["Total Price"])+' to your order!')
-		final_order_cost = final_order_cost + float(obj["Total Price"])
-
-	print("Your orders total cost is $"+str(finish_order_cost))
+	display_order()
 
 	while True:
 		#Ask to either edit, or finish order.
-		print(current_order) # print with format
 		print(
 			'\nEnter "1" to cash out and purchase your order!\n'
 			'Enter "2" to edit your order!\n'
-			'\nEnter "3" to return to the main menu: '
+			'Enter "3" to return to the main menu: \n'
 		)
 		while True:
 			finish_order_input = input("Please enter one of the numbers listed above to proceed: ")
 			if finish_order_input.isdigit() and int(finish_order_input) > 0 and int(finish_order_input) <= 3:
 				finish_order_input = int(finish_order_input)
 				if finish_order_input == 1:
-					print("Temp") # Cash out
+					finish_order()
 				elif finish_order_input == 2:
-					print("Temp")
+					edit_order()
 				if finish_order_input == 3:
 					main_menu()
 			else:
@@ -281,6 +283,141 @@ def view_edit_and_finish_order():
 
 
 
-main_menu() # Execute the main_menu() first thing when running program
+def display_order():
+	global current_order
+	global final_order_cost
+	final_order_cost = 0
+	if len(current_order) > 0:
+		print("\nYour current order contains:") # Print out order in the recipt format the assignment wants
+		i = 0
+		for obj in current_order:
+			i += 1
+			print(str(i)+'. "'+str(obj["Item Name"])+'": Your order contains '+str(obj["Quantity"])+' of these at $'+str(obj["Individual Price"])+' each, adding $'+str(obj["Total Price"])+' to your order!')
+			final_order_cost = round(final_order_cost + float(obj["Total Price"]), 2)
+
+		print("\nYour orders total cost is $"+str(final_order_cost)+"\n")
+	else:
+		print("\nYour current order does not contain any items!") # Print out order in the recipt format the assignment wants
+
+
+
+def edit_order():
+	global current_order
+	clear_screen()
+	print("\nYou've selected that you want to edit your order!")
+	display_order()
+	while True:
+		edit_selection = input('Enter the number displayed to the left of the item that you want to remove or change the quantity of,\nor enter "b" to go back! ')
+		if edit_selection.isdigit() and int(edit_selection) > 0 and int(edit_selection) <= len(current_order):
+			clear_screen()
+			display_order()
+			edit_selection = int(edit_selection)
+			print(
+				f'\nEnter "1" to remove all "{current_order[edit_selection - 1]["Item Name"]}" from your order!\n'
+				f'Enter "2" to change the quantity of "{current_order[edit_selection - 1]["Item Name"]}" in your order!\n'
+				'Enter "3" to go back.'
+			)
+			while True:
+				edit_option = input("Please enter one of the options listed above: ")
+				if edit_option.isdigit() and int(edit_option) >= 1 and int(edit_option) <= 3:
+					edit_option = int(edit_option)
+
+					if edit_option == 1:
+						del current_order[edit_selection - 1]
+						if len(current_order) == 0:
+							main_menu()
+						elif len(current_order) > 0:
+							view_edit_and_finish_order()
+					elif edit_option == 2:
+						while True:
+							new_quantity = input(f'Enter a new quantity for "{current_order[edit_selection - 1]["Item Name"]}": ')
+							if new_quantity.isdigit() and int(new_quantity) >= 0:
+								new_quantity = int(new_quantity)
+								if new_quantity == 0:
+									while True:
+										confirm = input(f'\nUpdating the quantity of "{current_order[edit_selection - 1]["Item Name"]}" to {new_quantity} will remove the item from your order.\nEnter "y" to proceed or "n" to calcel changing the quantity: ')
+										if confirm.lower() == 'y':
+											del current_order[edit_selection - 1]
+											view_edit_and_finish_order()
+										elif confirm.lower() == 'n':
+											view_edit_and_finish_order()
+										else:
+											print_invalid_input(confirm)
+								else:
+									new_price = round(float(current_order[edit_selection - 1]["Individual Price"]) * float(new_quantity), 2)
+									while True:
+										confirm = input(f'\nUpdating the quantity of "{current_order[edit_selection - 1]["Item Name"]}" to {new_quantity} will cost ${new_price}.\nEnter "y" to proceed or "n" to calcel changing the quantity: ')
+										if confirm.lower() == 'y':
+											current_order[edit_selection - 1]["Quantity"] = new_quantity
+											current_order[edit_selection - 1]["Total Price"] = new_price
+											view_edit_and_finish_order()
+										elif confirm.lower() == 'n':
+											view_edit_and_finish_order()
+										else:
+											print_invalid_input(confirm)
+							else:
+								print_invalid_input(new_quantity)
+					elif edit_option == 3:
+						view_edit_and_finish_order()
+				else:
+					print_invalid_input(edit_option)
+		elif edit_selection.lower() == 'b':
+			view_edit_and_finish_order()
+		else:
+			print_invalid_input(edit_selection)
+
+
+
+def finish_order():
+	clear_screen()
+	display_order()
+	print('Enter "y" to purchase this order and print the recipt!\nEnter "n" to go back!\nEnter "c" to cancel ordering\n')
+	while True:
+		finishing_input = input("Please enter one of the options listed above: ")
+		if finishing_input.lower() == 'y':
+			print_recipt()
+		elif finishing_input.lower() == 'n':
+			view_edit_and_finish_order()
+		elif finishing_input.lower() == 'c':
+			clear_screen()
+			display_order()
+			print("Canceling will delete your enitre order and end the program!")
+			print('\nEnter "c" to cancel your order and end the program!\nEnter "b" to go back and view your order!')
+			while True:
+				cancel_input = input("Please enter one of the options listed above: ")
+				if cancel_input.lower() == 'c':
+					cancel_order()
+				elif cancel_input.lower() == 'b':
+					view_edit_and_finish_order()
+				else:
+					print_invalid_input(cancel_input)
+
+		else:
+			print_invalid_input(finishing_input)
+
+
+
+def print_recipt():
+	clear_screen()
+	item_name_string_length = 26
+	print("\nThank you for visiting "+truck_name+"!!!\n    We hope that we've just made your day even better!!!\n")
+	print("Item name                 | Price  | Quantity")
+	print("--------------------------|--------|----------")
+	print(f"Your orders total cost was ${final_order_cost}") # calculated in display_order()
+	for obj in current_order:
+		item_name = str(obj["Item Name"])
+		quantity = str(obj["Quantity"])
+		indv_price = str(obj["Individual Price"])
+		total_item_price = str(obj["Total Price"])
+		additional_spaces_required = item_name_string_length - len(item_name)
+		additional_spaces_string = " " * additional_spaces_required
+		print(item_name + additional_spaces_string + "| $" + indv_price + "  | " + quantity)
+	print("")
+	end_program()
+
+
+
+if __name__ == "__main__":
+	main_menu() # Execute the main_menu() first thing when running program
 
 
