@@ -346,7 +346,7 @@ def edit_order():
 								else:
 									new_price = round(float(current_order[edit_selection - 1]["Individual Price"]) * float(new_quantity), 2)
 									while True:
-										confirm = input(f'\nUpdating the quantity of "{current_order[edit_selection - 1]["Item Name"]}" to {new_quantity} will cost ${new_price}.\nEnter "y" to proceed or "n" to calcel changing the quantity: ')
+										confirm = input(f'\nUpdating the quantity of "{current_order[edit_selection - 1]["Item Name"]}" to {new_quantity} will cost ${new_price}.\nEnter "y" to proceed or "n" to cancel changing the quantity: ')
 										if confirm.lower() == 'y':
 											current_order[edit_selection - 1]["Quantity"] = new_quantity
 											current_order[edit_selection - 1]["Total Price"] = new_price
