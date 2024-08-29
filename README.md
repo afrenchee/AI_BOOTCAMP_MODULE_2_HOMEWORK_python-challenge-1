@@ -6,3 +6,5 @@ REQUIREMENTS TO RUN CORRECTLY!!!
 Command Prompt commands are correctly executed in clear_screen() and end_program()
 
 2. This program was designed to be used in the terminal on Mac / Linux, or the Command Prompt terminal equivelent in Windows.
+
+3. This requires Python 3. "python3 menu.py" will start the program.
