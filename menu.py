@@ -1,11 +1,9 @@
 
 
 
-# This code was designed to be ran through the command line in a terminal enviorment
-
 import os, sys
 
-windows_is_the_OS = False # This variable is set by the main programmer to ensure that terminal commands are correctly executed in clear_screen() and cancel_order()
+windows_is_the_OS = False # This variable is set by the main programmer to ensure that Terminal / Command Prompt commands are correctly executed in clear_screen() and end_program()
 
 # Menu dictionary
 menu = {
@@ -68,7 +66,7 @@ truck_name = "THE GIGA_CHAD FOOD TRUCK"
 
 
 
-def clear_screen(): # This function is used to clear the terminal screen based on if the program is running on windows, or a Mac / Linux system.
+def clear_screen():
 	if windows_is_the_OS:
 		os.system('cls')
 	else:
@@ -78,7 +76,6 @@ def clear_screen(): # This function is used to clear the terminal screen based o
 
 def end_program():
 	if windows_is_the_OS:
-		os.system('cd')
 		os.system('dir')
 	else:
 		os.system('pwd')
