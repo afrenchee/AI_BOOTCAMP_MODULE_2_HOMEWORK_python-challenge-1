@@ -400,19 +400,34 @@ def finish_order():
 def print_recipt():
 	clear_screen()
 	item_name_string_length = 26
+	indv_price_string_length = 12
+	quantity_string_length = 9
+	total_item_price_string_length = 16
 	print("\nThank you for visiting "+truck_name+"!!!\n    We hope that we've just made your day even better!!!\n")
-	print("Item name                 | Price  | Quantity")
-	print("--------------------------|--------|----------")
-	print(f"Your orders total cost was ${final_order_cost}") # calculated in display_order()
+	print("Item name                 | Indv. Price  | Quantity | Total Item Price |")
+	print("--------------------------|--------------|----------|------------------|")
 	for obj in current_order:
 		item_name = str(obj["Item Name"])
 		quantity = str(obj["Quantity"])
 		indv_price = str(obj["Individual Price"])
 		total_item_price = str(obj["Total Price"])
-		additional_spaces_required = item_name_string_length - len(item_name)
-		additional_spaces_string = " " * additional_spaces_required
-		print(item_name + additional_spaces_string + "| $" + indv_price + "  | " + quantity)
+
+		item_name_additional_spaces_required = item_name_string_length - len(item_name)
+		item_name_additional_spaces_string = " " * item_name_additional_spaces_required
+
+		indv_price_additional_spaces_required = indv_price_string_length - len(indv_price)
+		indv_price_additional_spaces_string = " " * indv_price_additional_spaces_required
+
+		quantity_additional_spaces_required = quantity_string_length - len(quantity)
+		quantity_additional_spaces_string = " " * quantity_additional_spaces_required
+
+		total_item_price_additional_spaces_required = total_item_price_string_length - len(total_item_price)
+		total_item_price_additional_spaces_string = " " * total_item_price_additional_spaces_required
+
+		print(item_name + item_name_additional_spaces_string + "| $" + indv_price + indv_price_additional_spaces_string + "| " + quantity + quantity_additional_spaces_string + "| $" + total_item_price + total_item_price_additional_spaces_string + "|")
 	print("")
+	print(f"Your orders total cost was ${final_order_cost}") # calculated in display_order()
+	print()
 	end_program()
 
 
